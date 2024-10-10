@@ -1,40 +1,141 @@
-# TP HackR
+Here is a README in French that includes the steps for installation and testing the routes, as well as other relevant information.
 
-Par groupe conséquent de 1 personne, vous allez devoir créer une API qui met à disposition des outils de hacking que vous développerez.
+---
 
-## Fonctionnalités
+# API REST avec JWT - Guide d'Installation et de Test
 
-- Outil de vérification d'existence d'adresse mail
-- Spammer de mail (contenu + nombre d'envoi)
-- service de phising (création d'une page web de phishing sur mesure - backé sur de l'IA !)
-- Est-ce que le MDP est sur la liste des plus courants (https://github.com/danielmiessler/SecLists/blob/master/Passwords/Common-Credentials/10k-most-common.txt)
-- récupérer tous domaines & sous-domaines associés à un Nom De Domaine (Adrien, on appelle ça aussi un "NDD" dans le milieu 😁)
-- DDoS
-- changement d'image random (trouver une API qui fait ça ^^)
-- Génération d'identité fictive
-- Crawler d'information sur une personne (à partir d'un nom / prénom)
-- Générateur de mot de passe sécurisé
+## Prérequis
+- PHP 8.0 ou version supérieure
+- Serveur Apache (ou un environnement WAMP pour Windows)
+- Postman (ou tout autre outil pour tester les requêtes HTTP)
 
-## Obligations
+## Installation
 
-- Contrôller l'accès à votre API grâce à un système de connexion basé sur JWT
-- Mettre en place un système de droits, gérable par des administrateurs, qui permet de définir quelles fonctionnalités peuvent être utilisées par quel utilisateur
-- Vous allez mettre en place un système de logs, interne à l'API, et consultable uniquement par les admins, qui permet de savoir quelles sont :
-  - les dernièrs actions réalisées
-  - les dernières actions d'un utilisateur spécifique
-  - les dernières actions d'une fonctionnalité spécifique
-- Respect scrupuleux des conventions RESTful
-- Intégrer un fichier Swagger.json pour la partie documentation. Le fichier doit être exploitable sur "https://swagger.io/tools/swagger-ui/"
-- Respecter le modèle de maturité de Richardson
-- Vous devrez obligatoirement tester votre API via POSTMAN. En y incluant :
-  - Organiser vos routes en collection et dans un projet
-  - Automatisant la génération du bearer et sa transmission dans toutes les requêtes. (Bearer = JWT)
- 
-## Vos choix 
+### 1. Cloner le projet
+Clonez ou copiez les fichiers de votre projet dans le répertoire de votre serveur web local (par exemple, `C:/wamp64/www/M1-MDS-2425-API/`).
 
-- technologies utilisées
+### 2. Installer les dépendances
+Utilisez Composer pour installer les dépendances (comme la bibliothèque JWT). Si Composer n'est pas installé, téléchargez-le depuis [getcomposer.org](https://getcomposer.org/).
 
-## Rendus
+Dans le répertoire du projet, exécutez la commande suivante pour installer la bibliothèque JWT :
 
-- Un repo github (oui, public Adrien 😇) (que vous allez m'envoyer en MP AUJOURD'HUI)
-- Un readme qui contient toutes les explications d'installation step-by-step. ☣☣☣☣ Si je n'arrive pas à installer "bêtement" vos API, en suivant step-by-step les indications de vos readme, 0 ☣☣☣☣
+```bash
+composer require firebase/php-jwt
+```
+
+### 3. Configurer les routes
+Les routes suivantes sont définies dans le fichier `index.php` et permettent de gérer les différentes fonctionnalités de l'API.
+
+#### Routes disponibles :
+- **`/` (GET)**: Renvoie un message de bienvenue.
+- **`/login` (POST)**: Authentification de l'utilisateur avec un nom d'utilisateur et un mot de passe. Retourne un JWT en cas de succès.
+- **`/protected` (GET)**: Route protégée qui nécessite un JWT valide pour y accéder.
+
+## Utilisation
+
+### 1. Tester la route de bienvenue
+
+Envoyez une requête `GET` à l'URL suivante dans votre navigateur ou via Postman :
+
+```
+http://localhost/M1-MDS-2425-API/
+```
+
+Réponse attendue :
+```json
+{
+  "message": "Welcome to the API"
+}
+```
+
+### 2. Authentification - Route `/login`
+
+#### Requête :
+
+Envoyez une requête `POST` à l'URL suivante pour vous connecter :
+
+```
+http://localhost/M1-MDS-2425-API/login
+```
+
+#### Corps de la requête (JSON) :
+```json
+{
+  "username": "admin",
+  "password": "password"
+}
+```
+
+#### Réponse attendue (en cas de succès) :
+```json
+{
+  "success": true,
+  "token": "<votre-jwt-token>"
+}
+```
+
+Le `token` est un JWT qui sera utilisé pour accéder aux routes protégées.
+
+### 3. Route protégée - `/protected`
+
+#### Requête :
+
+Une fois le `token` reçu après la connexion, vous pouvez accéder aux routes protégées en ajoutant le JWT dans l'en-tête `Authorization` de la requête.
+
+Envoyez une requête `GET` à l'URL suivante :
+
+```
+http://localhost/M1-MDS-2425-API/protected
+```
+
+#### En-tête requis :
+- **Key**: `Authorization`
+- **Value**: `Bearer <votre-jwt-token>`
+
+Remplacez `<votre-jwt-token>` par le token reçu lors de la connexion.
+
+#### Réponse attendue :
+Si le JWT est valide, vous recevrez une réponse similaire à celle-ci :
+```json
+{
+  "success": true,
+  "message": "Access granted to protected route",
+  "user": {
+    "user": "admin",
+    "exp": 1633201123
+  }
+}
+```
+
+Si le JWT est manquant ou invalide, la réponse sera :
+```json
+{
+  "success": false,
+  "message": "Invalid or expired token"
+}
+```
+
+### 4. Erreurs 404
+
+Si vous accédez à une route non définie, une réponse 404 sera retournée :
+
+```json
+{
+  "message": "Not Found"
+}
+```
+
+## Configuration supplémentaire
+
+Si vous utilisez Apache et rencontrez des problèmes avec l'en-tête `Authorization` (JWT), assurez-vous d'ajouter la règle suivante dans votre fichier `.htaccess` :
+
+```apache
+RewriteEngine On
+RewriteCond %{HTTP:Authorization} ^(.*)
+RewriteRule ^(.*)$ - [E=HTTP_AUTHORIZATION:%1]
+```
+
+## Exigences techniques
+- **PHP**: Version 8.0 ou supérieure
+- **JWT**: La bibliothèque JWT de Firebase est utilisée pour générer et valider les tokens.
+- **Postman**: Un outil pour tester les requêtes HTTP. 
