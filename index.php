@@ -18,6 +18,10 @@ switch ($uri) {
         require_once './routes/protected.php';
         break;
 
+    case '/email-validation':
+        require_once './routes/email-validation.php';
+        break;
+
     default:
         http_response_code(404);
         echo json_encode(['message' => 'Not Found']);
