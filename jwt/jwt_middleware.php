@@ -2,23 +2,19 @@
 // jwt/jwt_middleware.php
 require_once __DIR__ . '/JWT.php';
 
+
 function validateToken()
 {
-    // Check for Authorization header
-    if (!isset($_SERVER['HTTP_AUTHORIZATION'])) {
-        http_response_code(401); // Unauthorized
-        echo json_encode(['success' => false, 'message' => 'Authorization header missing']);
+    // Get the Authorization header
+    if (!isset($_COOKIE['jwtToken'])) {
+        http_response_code(401);
+        echo json_encode(['success' => false, 'message' => 'Token missing']);
         exit();
     }
 
-    error_log($_SERVER['HTTP_AUTHORIZATION']);
-
-    // Extract token from the Authorization header (Bearer token format)
-    $authHeader = $_SERVER['HTTP_AUTHORIZATION'];
-    $jwt = str_replace('Bearer ', '', $authHeader);
-
-    // Validate the token
+    $jwt = $_COOKIE['jwtToken'];
     $decoded = validateJWT($jwt);
+    error_log('decoded : ' . var_dump($decoded));
     if (!$decoded) {
         http_response_code(401); // Unauthorized
         echo json_encode(['success' => false, 'message' => 'Invalid or expired token']);

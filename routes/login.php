@@ -36,6 +36,7 @@ if ($data['username'] === 'admin' && $data['password'] === 'password') {
     ];
     $jwt = createJWT($payload);
     echo json_encode(['success' => true, 'token' => $jwt]);
+    setcookie("jwtToken", $jwt, time() + 3600, "/", "", true, true);
 } else {
     echo json_encode(['success' => false, 'message' => 'Access Denied']);
 }
