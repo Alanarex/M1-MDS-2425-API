@@ -5,5 +5,10 @@ return [
     'jwt_algorithm' => 'HS256',
     'email_validation_url' => 'https://api.hunter.io/v2/email-verifier',
     'email_validation_api_key' => '58a9a1e50da5bef69d22801ec1d7c22856a3d046',
+    'database_host' => 'localhost',
+    'database_name' => 'api_hackr',
+    'username' => 'root',
+    'password' => '',
+    'charset' => 'utf8mb4',
 ];
 

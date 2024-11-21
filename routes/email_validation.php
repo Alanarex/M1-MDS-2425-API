@@ -1,8 +1,5 @@
 <?php
 
-require_once __DIR__ . '/../jwt/jwt_middleware.php';
-$userData = validateToken();
-
 $config = require(__DIR__ . '/../config/config.php');
 
 if ($config) {
