@@ -1,0 +1,16 @@
+# Ignore the .env file
+.env
+
+# Ignore the vendor directory
+/vendor
+
+# Ignore the vendor directory
+/composer.json
+
+# Ignore other common sensitive or temporary files
+/node_modules
+*.log
+*.cache
+.idea/
+.vscode/
+.DS_Store

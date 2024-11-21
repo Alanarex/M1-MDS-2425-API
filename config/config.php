@@ -1,18 +1,24 @@
 <?php
-// config/config.php
-return [
-    'jwt_secret_key' => '846caa52bcc8551f49d2a005160ad4da00c0ca60e90932ad5b808d8b0cb20a6e',
-    'jwt_algorithm' => 'HS256',
-    'email_validation_url' => 'https://api.hunter.io/v2/email-verifier',
-    'email_validation_api_key' => '58a9a1e50da5bef69d22801ec1d7c22856a3d046',
-    'database_host' => 'localhost',
-    'database_name' => 'api_hackr',
-    'username' => 'root',
-    'password' => '',
-    'charset' => 'utf8mb4',
-    'base_path' => '/M1-MDS-2425-API',
-    'commond_passwords_file_url' => 'https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Common-Credentials/10k-most-common.txt',
-    'securitytrails_url' => 'https://api.securitytrails.com/v1/domain/$domain/subdomains',
-    'securitytrails_api_key' => 'Jbwi1kMIt8qnoFHm3c--CP_QGhWnVBej',
-];
 
+use Dotenv\Dotenv;
+
+// Load .env file
+require_once __DIR__ . '/../vendor/autoload.php';
+$dotenv = Dotenv::createImmutable(__DIR__ . '/../');
+$dotenv->load();
+
+return [
+    'jwt_secret_key' => $_ENV['JWT_SECRET_KEY'],
+    'jwt_algorithm' => $_ENV['JWT_ALGORITHM'],
+    'email_validation_url' => $_ENV['EMAIL_VALIDATION_URL'],
+    'email_validation_api_key' => $_ENV['EMAIL_VALIDATION_API_KEY'],
+    'database_host' => $_ENV['DATABASE_HOST'],
+    'database_name' => $_ENV['DATABASE_NAME'],
+    'username' => $_ENV['DATABASE_USERNAME'],
+    'password' => $_ENV['DATABASE_PASSWORD'],
+    'charset' => 'utf8mb4',
+    'base_path' => $_ENV['BASE_PATH'],
+    'commond_passwords_file_url' => $_ENV['COMMON_PASSWORDS_FILE_URL'],
+    'securitytrails_url' => $_ENV['SECURITYTRAILS_URL'],
+    'securitytrails_api_key' => $_ENV['SECURITYTRAILS_API_KEY'],
+];
