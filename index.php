@@ -2,51 +2,55 @@
 
 $config = require(__DIR__ . '/config/config.php');
 
-$protectedRoutes = [
-    '/test' => 'test.php',
-    '/logout' => 'test.php',
-    '/migration' => 'migration.php',
-    '/user/new' => 'create_user.php',
-    '/user/edit' => 'modify_user.php',
-    '/user/delete' => 'delete_user.php',
-    '/email-validation' => 'email_validation.php',
-    '/check-common-password' => 'check_common_password.php',
-    '/fetch-subdomains' => 'fetch_subdomains.php',
+// Consolidated routes with methods and protection status
+$routes = [
+    '/' => ['file' => '/resources/index.html', 'method' => 'GET', 'protected' => false],
+    '/login' => ['file' => 'login.php', 'method' => 'POST', 'protected' => false],
+    '/test' => ['file' => 'test.php', 'method' => 'GET', 'protected' => true],
+    '/logout' => ['file' => 'test.php', 'method' => 'POST', 'protected' => true],
+    '/migration' => ['file' => 'migration.php', 'method' => 'GET', 'protected' => true],
+    '/user/new' => ['file' => 'create_user.php', 'method' => 'POST', 'protected' => true],
+    '/user/edit' => ['file' => 'modify_user.php', 'method' => 'PUT', 'protected' => true],
+    '/user/delete' => ['file' => 'delete_user.php', 'method' => 'DELETE', 'protected' => true],
+    '/email-validation' => ['file' => 'email_validation.php', 'method' => 'POST', 'protected' => true],
+    '/check-common-password' => ['file' => 'check_common_password.php', 'method' => 'POST', 'protected' => true],
+    '/fetch-subdomains' => ['file' => 'fetch_subdomains.php', 'method' => 'POST', 'protected' => true],
 ];
 
-$publicRoutes = [
-    '/' => '/resources/index.html',
-    '/login' => 'login.php',
-];
-
+// Parse the request URI and method
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$base_path = $config['base_path'];
-$uri = str_replace($base_path, "", $uri);
+$method = $_SERVER['REQUEST_METHOD'];
+$scriptName = dirname($_SERVER['SCRIPT_NAME']);
+$basePath = rtrim($scriptName, '/');
+$uri = preg_replace('#^' . preg_quote($basePath, '#') . '#', '', $uri);
 
-if (array_key_exists($uri, $protectedRoutes)) {
-    require_once __DIR__ . '/jwt/jwt_middleware.php';
-    validateToken();
-    $controllerFile = __DIR__ . '/routes/' . $protectedRoutes[$uri];
+// Check if the route exists
+if (array_key_exists($uri, $routes)) {
+    $route = $routes[$uri];
+
+    // Validate HTTP method
+    if ($method !== $route['method']) {
+        http_response_code(405); // Method Not Allowed
+        echo json_encode(['success' => false, 'message' => 'Method Not Allowed']);
+        exit();
+    }
+
+    // Check if the route is protected
+    if ($route['protected']) {
+        require_once __DIR__ . '/jwt/jwt_middleware.php';
+        validateToken(); // Validate the JWT token
+    }
+
+    // Include the controller file or resource
+    $controllerFile = __DIR__ . ($route['file']);
     if (file_exists($controllerFile)) {
         require_once $controllerFile;
     } else {
         http_response_code(404);
         echo json_encode(['message' => 'Controller file not found']);
     }
-} elseif (array_key_exists($uri, $publicRoutes)) {
-
-    if ($uri === '/') {
-        require_once __DIR__ . $publicRoutes[$uri];
-    } else {
-        $controllerFile = __DIR__ . '/routes/' . $publicRoutes[$uri];
-        if (file_exists($controllerFile)) {
-            require_once $controllerFile;
-        } else {
-            http_response_code(404);
-            echo json_encode(['message' => 'Controller file not found']);
-        }
-    }
 } else {
+    // Route not found
     http_response_code(404);
     echo json_encode(['message' => 'Not Found']);
 }

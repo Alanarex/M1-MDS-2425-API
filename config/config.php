@@ -17,7 +17,6 @@ return [
     'username' => $_ENV['DATABASE_USERNAME'],
     'password' => $_ENV['DATABASE_PASSWORD'],
     'charset' => 'utf8mb4',
-    'base_path' => $_ENV['BASE_PATH'],
     'commond_passwords_file_url' => $_ENV['COMMON_PASSWORDS_FILE_URL'],
     'securitytrails_url' => $_ENV['SECURITYTRAILS_URL'],
     'securitytrails_api_key' => $_ENV['SECURITYTRAILS_API_KEY'],
