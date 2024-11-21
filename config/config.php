@@ -10,5 +10,7 @@ return [
     'username' => 'root',
     'password' => '',
     'charset' => 'utf8mb4',
+    'base_path' => '/M1-MDS-2425-API',
+    'commond_passwords_file_url' => 'https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Common-Credentials/10k-most-common.txt',
 ];
 
