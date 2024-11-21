@@ -2,10 +2,7 @@
 .env
 
 # Ignore the vendor directory
-/vendor
-
-# Ignore the vendor directory
-/composer.json
+/vendor/
 
 # Ignore other common sensitive or temporary files
 /node_modules
