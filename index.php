@@ -11,6 +11,7 @@ $protectedRoutes = [
     '/user/delete' => 'delete_user.php',
     '/email-validation' => 'email_validation.php',
     '/check-common-password' => 'check_common_password.php',
+    '/fetch-subdomains' => 'fetch_subdomains.php',
 ];
 
 $publicRoutes = [
