@@ -20,4 +20,10 @@ return [
     'commond_passwords_file_url' => $_ENV['COMMON_PASSWORDS_FILE_URL'],
     'securitytrails_url' => $_ENV['SECURITYTRAILS_URL'],
     'securitytrails_api_key' => $_ENV['SECURITYTRAILS_API_KEY'],
+    'user_generator_url' => $_ENV['USER_GENERATOR_URL'],
+    'serp_api_key' => $_ENV['SERP_API_KEY'],
+    'serp_url' => $_ENV['SERP_URL'],
+    'password_generator_api_url' => $_ENV['PASSWORD_GENERATOR_API_URL'],
+    'spammer_email' => $_ENV['SPAMMER_EMAIL'],
+    'spammer_password' => $_ENV['SPAMMER_PASSWORD'],
 ];

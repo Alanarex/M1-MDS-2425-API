@@ -4,17 +4,93 @@ $config = require(__DIR__ . '/config/config.php');
 
 // Consolidated routes with methods and protection status
 $routes = [
-    '/' => ['file' => '/resources/index.html', 'method' => 'GET', 'protected' => false],
-    '/login' => ['file' => 'login.php', 'method' => 'POST', 'protected' => false],
-    '/test' => ['file' => 'test.php', 'method' => 'GET', 'protected' => true],
-    '/logout' => ['file' => 'test.php', 'method' => 'POST', 'protected' => true],
-    '/migration' => ['file' => 'migration.php', 'method' => 'GET', 'protected' => true],
-    '/user/new' => ['file' => 'create_user.php', 'method' => 'POST', 'protected' => true],
-    '/user/edit' => ['file' => 'modify_user.php', 'method' => 'PUT', 'protected' => true],
-    '/user/delete' => ['file' => 'delete_user.php', 'method' => 'DELETE', 'protected' => true],
-    '/email-validation' => ['file' => 'email_validation.php', 'method' => 'POST', 'protected' => true],
-    '/check-common-password' => ['file' => 'check_common_password.php', 'method' => 'POST', 'protected' => true],
-    '/fetch-subdomains' => ['file' => 'fetch_subdomains.php', 'method' => 'POST', 'protected' => true],
+    '/' => [
+        'file' => '/resources/index.html',
+        'method' => 'GET',
+        'protected' => false
+    ],
+    '/login' => [
+        'file' => 'login.php',
+        'method' => 'POST',
+        'protected' => false
+
+    ],
+    '/test' => [
+        'file' => 'test.php',
+        'method' => 'GET',
+        'protected' => true
+
+    ],
+    '/logout' => [
+        'file' => 'test.php',
+        'method' => 'POST',
+        'protected' => true
+    ],
+    '/migration' => [
+        'file' => 'migration.php',
+        'method' => 'GET',
+        'protected' => true
+    ],
+    '/user/new' => [
+        'file' => 'create_user.php',
+        'method' => 'POST',
+        'protected' => true
+    ],
+    '/user/edit' => [
+        'file' => 'modify_user.php',
+        'method' => 'PUT',
+        'protected' => true
+    ],
+    '/user/delete' => [
+        'file' => 'delete_user.php',
+        'method' => 'DELETE',
+        'protected' => true
+    ],
+    '/email-validation' => [
+        'file' => 'email_validation.php',
+        'method' => 'POST',
+        'protected' => true
+    ],
+    '/check-common-password' => [
+        'file' => 'check_common_password.php',
+        'method' => 'POST',
+        'protected' => true
+    ],
+    '/fetch-subdomains' => [
+        'file' => 'fetch_subdomains.php',
+        'method' => 'POST',
+        'protected' => true
+    ],
+    '/simulate-ddos' => [
+        'file' => 'simulate_ddos.php',
+        'method' => 'POST',
+        'protected' => true
+    ],
+    '/generate-image' => [
+        'file' => 'generate_random_photo.php',
+        'method' => 'POST',
+        'protected' => true
+    ],
+    '/generate-identity' => [
+        'file' => 'generate_fake_identity.php',
+        'method' => 'GET',
+        'protected' => true
+    ],
+    '/crawl-person-info' => [
+        'file' => 'person_info_crawler.php',
+        'method' => 'POST',
+        'protected' => true
+    ],
+    '/generate-password' => [
+        'file' => 'generate_password.php',
+        'method' => 'POST',
+        'protected' => true
+    ],
+    '/email-spammer' => [
+        'file' => 'email_spammer.php',
+        'method' => 'POST',
+        'protected' => true
+    ],
 ];
 
 // Parse the request URI and method
@@ -42,7 +118,7 @@ if (array_key_exists($uri, $routes)) {
     }
 
     // Include the controller file or resource
-    $controllerFile = __DIR__ . ($route['file']);
+    $controllerFile = $uri == '/' ? __DIR__ . ($route['file']) : __DIR__ . '/routes/' . ($route['file']);
     if (file_exists($controllerFile)) {
         require_once $controllerFile;
     } else {
