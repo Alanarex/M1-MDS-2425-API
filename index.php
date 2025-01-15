@@ -45,6 +45,10 @@ $routes = [
         'file' => 'delete_user.php',
         'method' => 'DELETE',
         'protected' => true
+    '/users/all' => [
+        'file' => 'get_all_users.php',
+        'method' => 'GET',
+        'protected' => true,
     ],
     '/email-validation' => [
         'file' => 'email_validation.php',
