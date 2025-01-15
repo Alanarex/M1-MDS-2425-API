@@ -1,8 +1,11 @@
-RewriteEngine On
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /M1-MDS-2425-API/
 
-# If the request is for a file or directory that exists, serve it directly
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
+    # If the request is for an existing file or directory, serve it directly
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
 
-# Otherwise, send the request to index.php
-RewriteRule ^(.*)$ index.php [QSA,L]
+    # Otherwise, route the request to index.php
+    RewriteRule ^ index.php [QSA,L]
+</IfModule>

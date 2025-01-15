@@ -29,23 +29,20 @@ try {
     $stmt->execute([':username' => $data['username']]);
     $user = $stmt->fetch();
 
-    // Verify user and check if the role is 'admin'
+    // Verify user and check if the user is 'admin'
     if ($user) {
         if (password_verify($data['password'], $user['password'])) {
-            if ($user['role'] === 'admin') {
-                $payload = [
-                    'user' => $user['username'],
-                    'exp' => time() + 3600
-                ];
-                $jwt = createJWT($payload);
+            $payload = [
+                'user' => $user['username'],
+                'is_admin' => $user['is_admin'],
+                'exp' => time() + 3600
+            ];
+            $jwt = createJWT($payload);
 
-                // Send the response
-                echo json_encode(['success' => true, 'token' => $jwt]);
-                // Set the JWT in a secure HttpOnly cookie
-                setcookie("jwtToken", $jwt, time() + 3600, "/", "", true, true);
-            } else {
-                echo json_encode(['success' => false, 'message' => 'Access Denied: User is not an admin']);
-            }
+            // Send the response
+            echo json_encode(['success' => true, 'token' => $jwt]);
+            // Set the JWT in a secure HttpOnly cookie
+            setcookie("jwtToken", $jwt, time() + 3600, "/", "", true, true);
         } else {
             echo json_encode(['success' => false, 'message' => 'Password mismatch']);
         }

@@ -1,99 +1,118 @@
 <?php
 
 $config = require(__DIR__ . '/config/config.php');
+require_once __DIR__ . '/jwt/jwt_middleware.php';
+require_once __DIR__ . '/db_connect.php';
 
 // Consolidated routes with methods and protection status
 $routes = [
     '/' => [
         'file' => '/resources/index.html',
         'method' => 'GET',
-        'protected' => false
+        'protected' => false,
+        'admin_only'=>false
     ],
     '/login' => [
         'file' => 'login.php',
         'method' => 'POST',
-        'protected' => false
-
+        'protected' => false,
+        'admin_only'=>false
     ],
-    '/test' => [
-        'file' => 'test.php',
-        'method' => 'GET',
-        'protected' => true
-
-    ],
+    // '/test' => [
+    //     'file' => 'test.php',
+    //     'method' => 'GET',
+    //     'protected' => true,
+    //     'admin_only'=>false
+    // ],
     '/logout' => [
-        'file' => 'test.php',
+        'file' => 'logout.php',
         'method' => 'POST',
-        'protected' => true
+        'protected' => true,
+        'admin_only'=>false
     ],
     '/migration' => [
         'file' => 'migration.php',
         'method' => 'GET',
-        'protected' => true
+        'protected' => false,
+        'admin_only'=>false
     ],
-    '/user/new' => [
+    '/users/new' => [
         'file' => 'create_user.php',
         'method' => 'POST',
-        'protected' => true
+        'protected' => true,
+        'admin_only'=>true
     ],
-    '/user/edit' => [
+    '/users/edit' => [
         'file' => 'modify_user.php',
         'method' => 'PUT',
-        'protected' => true
+        'protected' => true,
+        'admin_only'=>true
     ],
-    '/user/delete' => [
+    '/users/delete' => [
         'file' => 'delete_user.php',
         'method' => 'DELETE',
-        'protected' => true
+        'protected' => true,
+        'admin_only'=>true
+    ],
     '/users/all' => [
         'file' => 'get_all_users.php',
         'method' => 'GET',
         'protected' => true,
+        'admin_only'=>true
     ],
     '/email-validation' => [
         'file' => 'email_validation.php',
         'method' => 'POST',
-        'protected' => true
+        'protected' => true,
+        'admin_only'=>true
     ],
     '/check-common-password' => [
         'file' => 'check_common_password.php',
         'method' => 'POST',
-        'protected' => true
+        'protected' => true,
+        'admin_only'=>true
     ],
     '/fetch-subdomains' => [
         'file' => 'fetch_subdomains.php',
         'method' => 'POST',
-        'protected' => true
+        'protected' => true,
+        'admin_only'=>true
     ],
     '/simulate-ddos' => [
         'file' => 'simulate_ddos.php',
         'method' => 'POST',
-        'protected' => true
+        'protected' => true,
+        'admin_only'=>true
     ],
     '/generate-image' => [
         'file' => 'generate_random_photo.php',
         'method' => 'POST',
-        'protected' => true
+        'protected' => true,
+        'admin_only'=>true
     ],
     '/generate-identity' => [
         'file' => 'generate_fake_identity.php',
         'method' => 'GET',
-        'protected' => true
+        'protected' => true,
+        'admin_only'=>true
     ],
     '/crawl-person-info' => [
         'file' => 'person_info_crawler.php',
         'method' => 'POST',
-        'protected' => true
+        'protected' => true,
+        'admin_only'=>true
     ],
     '/generate-password' => [
         'file' => 'generate_password.php',
         'method' => 'POST',
-        'protected' => true
+        'protected' => true,
+        'admin_only'=>true
     ],
     '/email-spammer' => [
         'file' => 'email_spammer.php',
         'method' => 'POST',
-        'protected' => true
+        'protected' => true,
+        'admin_only'=>true
     ],
 ];
 
@@ -117,8 +136,21 @@ if (array_key_exists($uri, $routes)) {
 
     // Check if the route is protected
     if ($route['protected']) {
-        require_once __DIR__ . '/jwt/jwt_middleware.php';
-        validateToken(); // Validate the JWT token
+        $user = validateToken(); // Validate the JWT token and get user data
+
+        if (!$user) {
+            http_response_code(401); // Unauthorized
+            echo json_encode(['error' => 'Unauthorized']);
+            exit();
+        }
+
+        // Check if the route is admin only
+        if ($route['admin_only'] && !$user['is_admin']) {
+            http_response_code(403); // Forbidden
+            echo json_encode($user);
+            echo json_encode(['error' => 'Access denied', 'is_admin' => $user['is_admin'], 'route' => $route['admin_only']]);
+            exit();
+        }
     }
 
     // Include the controller file or resource
@@ -134,3 +166,4 @@ if (array_key_exists($uri, $routes)) {
     http_response_code(404);
     echo json_encode(['message' => 'Not Found']);
 }
+?>
