@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../jwt/jwt_middleware.php';
 require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../helpers/logger.php';
 validateToken();
 
 use PHPMailer\PHPMailer\PHPMailer;
@@ -52,6 +53,14 @@ try {
     for ($i = 0; $i < $count; $i++) {
         $mail->send();
     }
+
+    // Retrieve username and URL from cookies
+    $username = isset($_COOKIE['username']) ? $_COOKIE['username'] : 'unknown';
+    $url = isset($_COOKIE['url']) ? $_COOKIE['url'] : 'unknown';
+
+    // Log the action
+    logAction($username, $url, "Spammed email: {$data['email']} with content: {$data['content']} for {$data['count']} times");
+
 
     echo json_encode(['success' => true, 'message' => "Successfully sent {$count} emails to {$to}"]);
 } catch (Exception $e) {

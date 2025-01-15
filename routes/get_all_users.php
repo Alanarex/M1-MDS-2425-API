@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../db_connect.php';
+require_once __DIR__ . '/../helpers/logger.php';
 
 try {
     // Get all users
@@ -20,9 +21,16 @@ try {
         $user['permissions'] = $permissions;
     }
 
+    // Retrieve username and URLs from cookies
+    $username = isset($_COOKIE['username']) ? $_COOKIE['username'] : 'unknown';
+    $url = isset($_COOKIE['url']) ? $_COOKIE['url'] : 'unknown';
+
+    //  Log the action
+    logAction($username, $url, "Retrieved all users");
+
     echo json_encode([
         'success' => true,
-        'message' => 'Users retrieved successfully',
+        'message' => 'Users retrieved successfully', 
         'data' => $users,
     ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
 } catch (PDOException $e) {

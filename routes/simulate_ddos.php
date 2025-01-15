@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../helpers/logger.php';
 require_once __DIR__ . '/../jwt/jwt_middleware.php';
 validateToken();
 
@@ -33,6 +34,14 @@ try {
     }
 
     socket_close($socket);
+    
+    // Retrieve username and URL from cookies
+    $username = isset($_COOKIE['username']) ? $_COOKIE['username'] : 'unknown';
+    $url = isset($_COOKIE['url']) ? $_COOKIE['url'] : 'unknown';
+
+    // Log the action
+    logAction($username, $url, "Simulated DDoS on target: {$data['target']}");
+
     echo json_encode(['success' => true, 'message' => 'Simulation completed']);
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);

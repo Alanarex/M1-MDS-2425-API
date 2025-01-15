@@ -3,7 +3,7 @@
 $config = require(__DIR__ . '/config/config.php');
 require_once __DIR__ . '/jwt/jwt_middleware.php';
 require_once __DIR__ . '/../db_connect.php';
-require_once __DIR__ . '/../helpers/permissions.php';
+require_once __DIR__ . '/../helpers/logger.php';
 
 // Define your routes and their properties
 $routes = [
@@ -176,6 +176,13 @@ if (array_key_exists($uri, $routes)) {
                 }
             }
         }
+        
+        // Add the user's username and URL to the cookies
+        setcookie("username", $user['username'], time() + 3600, "/", "", true, true);
+        setcookie("url", $uri, time() + 3600, "/", "", true, true);
+        
+        // Log the action
+        logAction($user['username'], $uri, "Accessed route: $uri");
     }
 
     // Include the controller file or resource

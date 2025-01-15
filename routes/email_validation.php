@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../helpers/logger.php';
 
 $config = require(__DIR__ . '/../config/config.php');
 
@@ -52,6 +53,13 @@ if ($responseArray && isset($responseArray['data']['status'], $responseArray['da
     $status = $responseArray['data']['status'];
     $result = $responseArray['data']['result'];
     $email = $responseArray['data']['email'];
+
+    // Retrieve username and URL from cookies
+    $username = isset($_COOKIE['username']) ? $_COOKIE['username'] : 'unknown';
+    $url = isset($_COOKIE['url']) ? $_COOKIE['url'] : 'unknown';
+
+    // Log the action
+    logAction($username, $url, "Validated email: {$data['email']}");
 
     echo json_encode([
         'success' => true,

@@ -1,5 +1,6 @@
 <?php
 $config = require(__DIR__ . '/../config/config.php');
+require_once __DIR__ . '/../helpers/logger.php';
 
 $data = json_decode(file_get_contents('php://input'), true);
 
@@ -24,6 +25,13 @@ $passwordList = array_map('trim', $passwordList);
 $index = array_search($password, $passwordList);
 
 if ($index !== false) {
+    // Retrieve username and URL from cookies
+    $username = isset($_COOKIE['username']) ? $_COOKIE['username'] : 'unknown';
+    $url = isset($_COOKIE['url']) ? $_COOKIE['url'] : 'unknown';
+
+    // Log the action
+    logAction($username, $url, "Checked common password: {$data['password']}");
+
     echo json_encode(['success' => true, 'message' => 'Password found', 'index' => $index]);
 } else {
     echo json_encode(['success' => false, 'message' => 'Password not found']);

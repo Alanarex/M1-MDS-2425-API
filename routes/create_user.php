@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../db_connect.php';
+require_once __DIR__ . '/../helpers/logger.php';
 
 $data = json_decode(file_get_contents('php://input'), true);
 
@@ -58,6 +59,13 @@ try {
 
     // Commit transaction
     $pdo->commit();
+
+    // Retrieve username and URL from cookies
+    $username = isset($_COOKIE['username']) ? $_COOKIE['username'] : 'unknown';
+    $url = isset($_COOKIE['url']) ? $_COOKIE['url'] : 'unknown';
+
+    // Log the action
+    logAction($username, $url, "Created a new user: {$data['username']}");
 
     echo json_encode(['success' => true, 'message' => 'User created successfully']);
 } catch (PDOException $e) {

@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../jwt/JWT.php';
 require __DIR__ . '/../db_connect.php';
+require_once __DIR__ . '/../helpers/logger.php';
 
 $data = json_decode(file_get_contents('php://input'), true);
 
@@ -49,6 +50,9 @@ try {
                 'exp' => time() + 3600
             ];
             $jwt = createJWT($payload);
+
+            // Log the action
+            logAction($user['username'], "/login", "Logged in successfully");
 
             // Send the response
             echo json_encode(['success' => true, 'token' => $jwt]);

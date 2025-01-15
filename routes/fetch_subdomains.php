@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../helpers/logger.php';
 require_once __DIR__ . '/../config/config.php';
 
 $data = json_decode(file_get_contents('php://input'), true);
@@ -32,6 +33,13 @@ if ($response === false) {
 $data = json_decode($response, true);
 
 if (isset($data['subdomains'])) {
+    // Retrieve username and URL from cookies
+    $username = isset($_COOKIE['username']) ? $_COOKIE['username'] : 'unknown';
+    $url = isset($_COOKIE['url']) ? $_COOKIE['url'] : 'unknown';
+
+    // Log the action
+    logAction($username, $url, "Fetched subdomains for domain: {$data['domain']}");
+
     echo json_encode(['success' => true, 'message' => 'Subdomains found', 'subdomains' => $data['subdomains']]);
 } else {
     echo json_encode(['success' => false, 'message' => 'No subdomains found']);

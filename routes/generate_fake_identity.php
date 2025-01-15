@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../helpers/logger.php';
 $config = require(__DIR__ . '/../config/config.php');
 
 $data = json_decode(file_get_contents('php://input'), true);
@@ -27,6 +28,13 @@ try {
             'postcode' => $user['location']['postcode'],
         ]
     ];
+
+    // Retrieve username and URL from cookies
+    $username = isset($_COOKIE['username']) ? $_COOKIE['username'] : 'unknown';
+    $url = isset($_COOKIE['url']) ? $_COOKIE['url'] : 'unknown';
+
+    // Log the action
+    logAction($username, $url, "Generated a fictitious identity");
 
     echo json_encode([
         'success' => true,
