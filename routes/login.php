@@ -32,9 +32,20 @@ try {
     // Verify user and check if the user is 'admin'
     if ($user) {
         if (password_verify($data['password'], $user['password'])) {
+            // Get user permissions
+            $stmt = $pdo->prepare("
+                SELECT p.name 
+                FROM permissions p
+                JOIN user_permissions up ON p.id = up.permission_id
+                WHERE up.user_id = :user_id
+            ");
+            $stmt->execute([':user_id' => $user['id']]);
+            $permissions = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
             $payload = [
                 'user' => $user['username'],
                 'is_admin' => $user['is_admin'],
+                'permissions' => $permissions,
                 'exp' => time() + 3600
             ];
             $jwt = createJWT($payload);
@@ -52,4 +63,4 @@ try {
 } catch (PDOException $e) {
     echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
 }
-
+?>

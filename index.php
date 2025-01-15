@@ -2,117 +2,130 @@
 
 $config = require(__DIR__ . '/config/config.php');
 require_once __DIR__ . '/jwt/jwt_middleware.php';
-require_once __DIR__ . '/db_connect.php';
+require_once __DIR__ . '/../db_connect.php';
+require_once __DIR__ . '/../helpers/permissions.php';
 
-// Consolidated routes with methods and protection status
+// Define your routes and their properties
 $routes = [
     '/' => [
         'file' => '/resources/index.html',
         'method' => 'GET',
         'protected' => false,
-        'admin_only'=>false
+        'permissions' => []
     ],
     '/login' => [
         'file' => 'login.php',
         'method' => 'POST',
         'protected' => false,
-        'admin_only'=>false
+        'permissions' => []
     ],
-    // '/test' => [
-    //     'file' => 'test.php',
-    //     'method' => 'GET',
-    //     'protected' => true,
-    //     'admin_only'=>false
-    // ],
     '/logout' => [
         'file' => 'logout.php',
         'method' => 'POST',
         'protected' => true,
-        'admin_only'=>false
+        'permissions' => []
     ],
     '/migration' => [
         'file' => 'migration.php',
         'method' => 'GET',
         'protected' => false,
-        'admin_only'=>false
+        'permissions' => []
     ],
     '/users/new' => [
         'file' => 'create_user.php',
         'method' => 'POST',
         'protected' => true,
-        'admin_only'=>true
+        'permissions' => ['create_users']
     ],
     '/users/edit' => [
         'file' => 'modify_user.php',
         'method' => 'PUT',
         'protected' => true,
-        'admin_only'=>true
+        'permissions' => ['edit_users']
     ],
     '/users/delete' => [
         'file' => 'delete_user.php',
         'method' => 'DELETE',
         'protected' => true,
-        'admin_only'=>true
+        'permissions' => ['delete_users']
     ],
     '/users/all' => [
         'file' => 'get_all_users.php',
         'method' => 'GET',
         'protected' => true,
-        'admin_only'=>true
+        'permissions' => ['view_users']
     ],
     '/email-validation' => [
         'file' => 'email_validation.php',
         'method' => 'POST',
         'protected' => true,
-        'admin_only'=>true
+        'permissions' => ['hackr']
     ],
     '/check-common-password' => [
         'file' => 'check_common_password.php',
         'method' => 'POST',
         'protected' => true,
-        'admin_only'=>true
+        'permissions' => ['hackr']
     ],
     '/fetch-subdomains' => [
         'file' => 'fetch_subdomains.php',
         'method' => 'POST',
         'protected' => true,
-        'admin_only'=>true
+        'permissions' => ['hackr']
     ],
     '/simulate-ddos' => [
         'file' => 'simulate_ddos.php',
         'method' => 'POST',
         'protected' => true,
-        'admin_only'=>true
+        'permissions' => ['hackr']
     ],
     '/generate-image' => [
         'file' => 'generate_random_photo.php',
         'method' => 'POST',
         'protected' => true,
-        'admin_only'=>true
+        'permissions' => ['hackr']
     ],
     '/generate-identity' => [
         'file' => 'generate_fake_identity.php',
         'method' => 'GET',
         'protected' => true,
-        'admin_only'=>true
+        'permissions' => ['hackr']
     ],
     '/crawl-person-info' => [
         'file' => 'person_info_crawler.php',
         'method' => 'POST',
         'protected' => true,
-        'admin_only'=>true
+        'permissions' => ['hackr']
     ],
     '/generate-password' => [
         'file' => 'generate_password.php',
         'method' => 'POST',
         'protected' => true,
-        'admin_only'=>true
+        'permissions' => ['hackr']
     ],
     '/email-spammer' => [
         'file' => 'email_spammer.php',
         'method' => 'POST',
         'protected' => true,
-        'admin_only'=>true
+        'permissions' => ['hackr']
+    ],
+    '/permissions' => [
+        'file' => 'get_permissions.php',
+        'method' => 'GET',
+        'protected' => true,
+        'permissions' => ['view_permissions']
+    ],
+    '/permissions/new' => [
+        'file' => 'add_permission.php',
+        'method' => 'POST',
+        'protected' => true,
+        'permissions' => ['add_permissions']
+    ],
+    '/permissions/delete' => [
+        'file' => 'delete_permission.php',
+        'method' => 'DELETE',
+        'protected' => true,
+        'permissions' => ['delete_permissions']
     ],
 ];
 
@@ -144,12 +157,24 @@ if (array_key_exists($uri, $routes)) {
             exit();
         }
 
-        // Check if the route is admin only
-        if ($route['admin_only'] && !$user['is_admin']) {
-            http_response_code(403); // Forbidden
-            echo json_encode($user);
-            echo json_encode(['error' => 'Access denied', 'is_admin' => $user['is_admin'], 'route' => $route['admin_only']]);
-            exit();
+        // Check if the user is admin
+        if (!$user['is_admin']) {
+            // Check if the user has the required permission
+            if (isset($route['permissions']) && !empty($route['permissions'])) {
+                $hasPermission = false;
+                foreach ($route['permissions'] as $permission) {
+                    if (in_array($permission, $user['permissions'])) {
+                        $hasPermission = true;
+                        break;
+                    }
+                }
+
+                if (!$hasPermission) {
+                    http_response_code(403); // Forbidden
+                    echo json_encode(['error' => 'Access denied or not authorized']);
+                    exit();
+                }
+            }
         }
     }
 
