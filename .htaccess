@@ -9,3 +9,17 @@
     # Otherwise, route the request to index.php
     RewriteRule ^ index.php [QSA,L]
 </IfModule>
+
+# Prevent directory listing
+Options -Indexes
+
+# Protect sensitive files
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+<FilesMatch "^(config\.php|composer\.json|README\.md)">
+    Order allow,deny
+    Deny from all
+</FilesMatch>

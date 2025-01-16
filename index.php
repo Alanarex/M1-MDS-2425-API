@@ -2,8 +2,8 @@
 
 $config = require(__DIR__ . '/config/config.php');
 require_once __DIR__ . '/jwt/jwt_middleware.php';
-require_once __DIR__ . '/../db_connect.php';
-require_once __DIR__ . '/../helpers/logger.php';
+require_once __DIR__ . '/db_connect.php';
+require_once __DIR__ . '/helpers/logger.php';
 
 // Define your routes and their properties
 $routes = [
@@ -11,122 +11,156 @@ $routes = [
         'file' => '/resources/index.html',
         'method' => 'GET',
         'protected' => false,
-        'permissions' => []
+        'permissions' => [],
+        'admin_only' => false
     ],
     '/login' => [
         'file' => 'login.php',
         'method' => 'POST',
         'protected' => false,
-        'permissions' => []
+        'permissions' => [],
+        'admin_only' => false
     ],
     '/logout' => [
         'file' => 'logout.php',
         'method' => 'POST',
         'protected' => true,
-        'permissions' => []
+        'permissions' => [],
+        'admin_only' => false
     ],
     '/migration' => [
         'file' => 'migration.php',
         'method' => 'GET',
         'protected' => false,
-        'permissions' => []
+        'permissions' => [],
+        'admin_only' => false
     ],
     '/users/new' => [
         'file' => 'create_user.php',
         'method' => 'POST',
         'protected' => true,
-        'permissions' => ['create_users']
+        'permissions' => ['create_users'],
+        'admin_only' => false
     ],
     '/users/edit' => [
         'file' => 'modify_user.php',
         'method' => 'PUT',
         'protected' => true,
-        'permissions' => ['edit_users']
+        'permissions' => ['edit_users'],
+        'admin_only' => false
     ],
     '/users/delete' => [
         'file' => 'delete_user.php',
         'method' => 'DELETE',
         'protected' => true,
-        'permissions' => ['delete_users']
+        'permissions' => ['delete_users'],
+        'admin_only' => false
     ],
     '/users/all' => [
         'file' => 'get_all_users.php',
         'method' => 'GET',
         'protected' => true,
-        'permissions' => ['view_users']
+        'permissions' => ['view_users'],
+        'admin_only' => false
     ],
     '/email-validation' => [
         'file' => 'email_validation.php',
         'method' => 'POST',
         'protected' => true,
-        'permissions' => ['hackr']
+        'permissions' => ['hackr'],
+        'admin_only' => false
     ],
     '/check-common-password' => [
         'file' => 'check_common_password.php',
         'method' => 'POST',
         'protected' => true,
-        'permissions' => ['hackr']
+        'permissions' => ['hackr'],
+        'admin_only' => false
     ],
     '/fetch-subdomains' => [
         'file' => 'fetch_subdomains.php',
         'method' => 'POST',
         'protected' => true,
-        'permissions' => ['hackr']
+        'permissions' => ['hackr'],
+        'admin_only' => false
     ],
     '/simulate-ddos' => [
         'file' => 'simulate_ddos.php',
         'method' => 'POST',
         'protected' => true,
-        'permissions' => ['hackr']
+        'permissions' => ['hackr'],
+        'admin_only' => false
     ],
     '/generate-image' => [
         'file' => 'generate_random_photo.php',
         'method' => 'POST',
         'protected' => true,
-        'permissions' => ['hackr']
+        'permissions' => ['hackr'],
+        'admin_only' => false
     ],
     '/generate-identity' => [
         'file' => 'generate_fake_identity.php',
         'method' => 'GET',
         'protected' => true,
-        'permissions' => ['hackr']
+        'permissions' => ['hackr'],
+        'admin_only' => false
     ],
-    '/crawl-person-info' => [
-        'file' => 'person_info_crawler.php',
+    '/information-crawler' => [
+        'file' => 'information-crawler.php',
         'method' => 'POST',
         'protected' => true,
-        'permissions' => ['hackr']
+        'permissions' => ['hackr'],
+        'admin_only' => false
     ],
     '/generate-password' => [
         'file' => 'generate_password.php',
         'method' => 'POST',
         'protected' => true,
-        'permissions' => ['hackr']
+        'permissions' => ['hackr'],
+        'admin_only' => false
     ],
     '/email-spammer' => [
         'file' => 'email_spammer.php',
         'method' => 'POST',
         'protected' => true,
-        'permissions' => ['hackr']
+        'permissions' => ['hackr'],
+        'admin_only' => false
     ],
     '/permissions' => [
         'file' => 'get_permissions.php',
         'method' => 'GET',
         'protected' => true,
-        'permissions' => ['view_permissions']
+        'permissions' => ['view_permissions'],
+        'admin_only' => false
     ],
     '/permissions/new' => [
         'file' => 'add_permission.php',
         'method' => 'POST',
         'protected' => true,
-        'permissions' => ['add_permissions']
+        'permissions' => ['add_permissions'],
+        'admin_only' => false
     ],
     '/permissions/delete' => [
         'file' => 'delete_permission.php',
         'method' => 'DELETE',
         'protected' => true,
-        'permissions' => ['delete_permissions']
+        'permissions' => ['delete_permissions'],
+        'admin_only' => false
     ],
+    '/logs/all' => [
+        'file' => 'get_logs.php',
+        'method' => 'GET',
+        'protected' => true,
+        'permissions' => [],
+        'admin_only' => true
+    ],
+    '/swagger.json' => [
+        'file' => 'swagger_json.php',
+        'method' => 'GET',
+        'protected' => true,
+        'permissions' => [],
+        'admin_only' => true
+    ]
 ];
 
 // Parse the request URI and method
@@ -157,6 +191,12 @@ if (array_key_exists($uri, $routes)) {
             exit();
         }
 
+        if(isset($route['admin_only']) && $route['admin_only'] && !$user['is_admin']) {
+            http_response_code(403); // Forbidden
+            echo json_encode(['error' => 'Access denied or not authorized']);
+            exit();
+        }
+
         // Check if the user is admin
         if (!$user['is_admin']) {
             // Check if the user has the required permission
@@ -178,11 +218,11 @@ if (array_key_exists($uri, $routes)) {
         }
         
         // Add the user's username and URL to the cookies
-        setcookie("username", $user['username'], time() + 3600, "/", "", true, true);
-        setcookie("url", $uri, time() + 3600, "/", "", true, true);
+        if(isset($user['username']))
+            setcookie("username", $user['username'], time() + 3600, "/", "", true, true);
+        if(isset($uri))
+            setcookie("url", $uri, time() + 3600, "/", "", true, true);
         
-        // Log the action
-        logAction($user['username'], $uri, "Accessed route: $uri");
     }
 
     // Include the controller file or resource

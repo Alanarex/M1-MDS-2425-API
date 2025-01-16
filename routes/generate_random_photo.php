@@ -24,7 +24,7 @@ try {
     
     echo json_encode([
         'success' => true,
-        'message' => 'User created successfully',
+        'message' => 'Image generated successfully',
         'user' => [
             'photo' => $photoUrl,
         ],
