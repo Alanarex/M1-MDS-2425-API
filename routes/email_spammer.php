@@ -26,7 +26,7 @@ if (!filter_var($to, FILTER_VALIDATE_EMAIL)) {
     exit();
 }
 
-if ($count <= 0 || $count > 100) { // Limit to 100 emails for safety
+if ($count <= 0 || $count > 100) { 
     echo json_encode(['success' => false, 'message' => 'Count must be between 1 and 100']);
     http_response_code(400);
     exit();
@@ -36,22 +36,29 @@ try {
     $mail = new PHPMailer(true);
 
     $mail->isSMTP();
-    $mail->Host = 'smtp.gmail.com'; // Replace with your SMTP host
+    $mail->Host = 'smtp.gmail.com';
+    $mail->SMTPDebug  = 2; 
     $mail->SMTPAuth = true;
-    $mail->Username = $config['spammer_email']; // Replace with your email
-    $mail->Password = $config['spammer_password']; // Replace with your email password or app-specific password
-    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+    $mail->SMTPSecure = "tls";                 
+    $mail->Username = $config['spammer_email']; 
+    $mail->Password = $config['spammer_password']; 
     $mail->Port = 587;
 
-    $mail->setFrom('your-email@gmail.com', 'Your Name'); // Replace with your sender email
-    $mail->addAddress($to);
+    $mail->setFrom($config['spammer_email'], 'potit hacker'); 
+    $mail->AddAddress($to);
 
     $mail->isHTML(true);
     $mail->Subject = $subject;
     $mail->Body = $message;
 
     for ($i = 0; $i < $count; $i++) {
-        $mail->send();
+        if(!$mail->Send()) {
+            echo json_encode(['success' => false, 'message' => 'Error: ' . $mail->ErrorInfo]);
+            http_response_code(500);
+            exit();
+          } else {
+            echo "Message sent!";
+          }
     }
 
     // Retrieve username and URL from cookies

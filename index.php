@@ -1,4 +1,13 @@
 <?php
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
+
+// Handle preflight requests
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
 
 $config = require(__DIR__ . '/config/config.php');
 require_once __DIR__ . '/jwt/jwt_middleware.php';
@@ -157,9 +166,9 @@ $routes = [
     '/swagger.json' => [
         'file' => 'swagger_json.php',
         'method' => 'GET',
-        'protected' => true,
+        'protected' => false,
         'permissions' => [],
-        'admin_only' => true
+        'admin_only' => false
     ]
 ];
 
