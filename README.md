@@ -48,6 +48,13 @@ Visitez `http://votre-domaine/migration`
 
 ## Routes & Exemples
 
+#### Route - `/`
+
+**Méthode :** GET
+
+**Description :** Documentation Swagger
+
+
 ### Authentification
 
 #### 1. Route - `/login`
@@ -486,83 +493,3 @@ Visitez `http://votre-domaine/migration`
 - Assurez-vous que les extensions PHP PDO et MySQL sont activées
 - Consultez les logs PHP en cas d'erreur
 - Vérifiez les permissions des fichiers et dossiers
-
-```markdown
-## Utilisation de Swagger pour la Documentation de l'API
-
-Pour utiliser Swagger afin de documenter et interagir avec votre API, suivez ces étapes :
-
----
-
-### 1. **Définir l’hôte dans `swagger.json`**
-
-Ouvrez votre fichier `swagger.json` et configurez la propriété `host` avec l’hôte et le port où votre API est exécutée. Par exemple :
-
-```json
-{
-  "swagger": "2.0",
-  "info": {
-    "title": "Documentation de l'API",
-    "description": "Documentation de l'API pour les outils de hacking",
-    "version": "1.0.0"
-  },
-  "host": "localhost:8000",
-  "basePath": "/",
-  "schemes": [
-    "http"
-  ],
-  "paths": {
-    // Vos chemins d'API ici
-  }
-}
-```
-
----
-
-### 2. **Configurer le fichier `swagger-initializer.js`**
-
-Ouvrez le fichier `swagger-ui/dist/swagger-initializer.js` et configurez la propriété `url` pour qu’elle pointe vers votre fichier `swagger.json`. Par exemple :
-
-```javascript
-url: "http://localhost:8000/swagger.json",
-```
-
----
-
-### 3. **Démarrer Swagger UI**
-
-1. Accédez au répertoire `dist` :
-   ```bash
-   cd swagger-ui/dist
-   ```
-
-2. Lancez un serveur intégré PHP :
-   ```bash
-   php -S localhost:8001
-   ```
-
----
-
-### 4. **Accéder à Swagger UI**
-
-Ouvrez votre navigateur et accédez à l’URL suivante :
-[http://localhost:8001](http://localhost:8001).
-
----
-
-### 5. **Gérer les problèmes de CORS**
-
-Si vous rencontrez des problèmes liés à CORS, vérifiez le fichier de configuration de votre site dans les fichiers de configuration de votre site. Assurez-vous qu’il inclut les lignes suivantes :
-
-```apache
-Header set Access-Control-Allow-Origin "*"
-Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-Header set Access-Control-Allow-Headers "Content-Type, Authorization"
-```
-
-Ensuite, activez le module des en-têtes et redémarrez le serveur :
-
-```bash
-sudo a2enmod headers
-sudo service apache2 restart
-```

@@ -4,14 +4,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>M1-MDS-2425-API</title>
+    <title>Swagger UI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.18.2/swagger-ui.css"
+        integrity="sha512-Fx2bx472ykst5EwyqNnGgXC2pPBxuxRnxHSa5Elf7sVbYA1vj2M/J50eJ0aXDal5hDjdSl3EEaQCaO5y69HmcQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 
 <body>
-    <h1>WELCOME</h1>
-    <div style="width:100%;height:0;padding-bottom:75%;position:relative;"><iframe
-            src="https://giphy.com/embed/Ju7l5y9osyymQ" width="100%" height="100%" style="position:absolute"
-            frameBorder="0" class="giphy-embed" allowFullScreen></iframe></div>
+    <div id="swagger-ui"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.18.2/swagger-ui-bundle.js"
+        integrity="sha512-J8sV3czWF0DcwmhzNrUbzjxvu3KefHg9Sn6YweslZnSsRFrLqx/y/ePkiiLvppzgwM73KjBt5G7xQ6kxEvvdvA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.18.2/swagger-ui-standalone-preset.js"
+        integrity="sha512-qvzEUMlxl6BHnALvxzMNZhtG6Ygu6K9j4kDefViA/+Ht++/N8nTBA+HnI4qaUj8SfyjBf11PhW5nxMdZTDm5Og=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.18.2/swagger-ui-es-bundle.js"
+        integrity="sha512-11ya0nx+lbc3ssRxQPJveg7Bda0U0dDIQhUfUYL0fyzdoHshcCoCA42q3oSCZaK9ggM1u1T831BKw6InRjd6hQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+
+        const host = window.location.host;
+        const protocol = window.location.protocol;
+        const swaggerJsonUrl = `${protocol}//${host}/swagger.php`;
+
+        window.onload = function () {
+            window.ui = SwaggerUIBundle({
+                url: "http://localhost/M1-MDS-2425-API/swagger.json",
+                dom_id: '#swagger-ui',
+                deepLinking: true,
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIStandalonePreset
+                ],
+                layout: "StandaloneLayout"
+            });
+        };
+    </script>
 </body>
 
 </html>

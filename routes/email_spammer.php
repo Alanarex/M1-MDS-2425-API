@@ -44,7 +44,7 @@ try {
     $mail->Password = $config['spammer_password']; 
     $mail->Port = 587;
 
-    $mail->setFrom($config['spammer_email'], 'potit hacker'); 
+    $mail->setFrom("tototiti@mail.xx", 'potit lion'); 
     $mail->AddAddress($to);
 
     $mail->isHTML(true);

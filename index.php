@@ -164,7 +164,7 @@ $routes = [
         'admin_only' => true
     ],
     '/swagger.json' => [
-        'file' => 'swagger_json.php',
+        'file' => 'swagger.php',
         'method' => 'GET',
         'protected' => false,
         'permissions' => [],
